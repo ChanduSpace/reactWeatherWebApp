@@ -6,6 +6,7 @@ import HourlyForecast from "./components/HourlyForecast";
 import WeeklyForecast from "./components/WeeklyForecast";
 import ComfortInfo from "./components/ComfortInfo";
 import WindInfo from "./components/WindInfo";
+
 import "./styles/weather.css";
 import "./styles/rightsection.css";
 import "./styles/rightbottom.css";
@@ -19,58 +20,79 @@ function App() {
   const [weekly, setWeekly] = useState([]);
 
   const fetchWeather = async (city) => {
-    const res1 = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${API_KEY}`
-    );
-    const data1 = await res1.json();
-    const res2 = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${API_KEY}`
-    );
-    const data2 = await res2.json();
+    try {
+      const res1 = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${API_KEY}`
+      );
+      const data1 = await res1.json();
+      if (data1.cod !== 200) throw new Error(data1.message);
 
-    const dt = new Date((data1.dt + data1.timezone) * 1000);
-    const weather = {
-      temp: data1.main.temp,
-      feelsLike: data1.main.feels_like,
-      humidity: data1.main.humidity,
-      city: data1.name,
-      description: data1.weather[0].description,
-      img: mapToImage(data1.weather[0].main),
-      date: `${dt.getDate()}, ${dt.toLocaleString("default", {
-        month: "short",
-      })} ${dt.toLocaleString("default", { weekday: "short" })}`,
-      time: `${dt.getHours()}:${dt.getMinutes()}`,
-      sunrise: toTime(data1.sys.sunrise, data1.timezone),
-      sunset: toTime(data1.sys.sunset, data1.timezone),
-      wind: {
-        speed: `${data1.wind.speed} km/h`,
-        direction: getWindDirection(data1.wind.deg),
-      },
-      uvi: 11, // mock UV value or replace with real API
-    };
+      const res2 = await fetch(
+        `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${API_KEY}`
+      );
+      const data2 = await res2.json();
+      if (data2.cod !== "200") throw new Error(data2.message);
 
-    setWeatherData(weather);
+      const timezoneOffset = data1.timezone; // seconds
 
-    const hourlyData = data2.list.slice(0, 8).map((item) => ({
-      time: toTime(item.dt, data2.city.timezone),
-      temp: Math.round(item.main.temp),
-      img: mapToImage(item.weather[0].main),
-    }));
-    setHourly(hourlyData);
-
-    const dailyData = [];
-    for (let i = 0; i < 40; i += 8) {
-      const item = data2.list[i];
-      const date = new Date((item.dt + data2.city.timezone) * 1000);
-      dailyData.push({
-        date: `${date.getDate()}, ${date.toLocaleString("default", {
+      // Correct local time
+      const localTime = new Date((data1.dt + timezoneOffset) * 1000);
+      const hours = localTime.getUTCHours();
+      const minutes = localTime.getUTCMinutes();
+      const timeStr = `${hours}:${minutes.toString().padStart(2, "0")}`;
+      const dateStr = `${localTime.getUTCDate()}, ${localTime.toLocaleString(
+        "default",
+        {
           month: "short",
-        })} ${date.toLocaleString("default", { weekday: "short" })}`,
+        }
+      )} ${localTime.toLocaleString("default", { weekday: "short" })}`;
+
+      const weather = {
+        temp: data1.main.temp,
+        feelsLike: data1.main.feels_like,
+        humidity: data1.main.humidity,
+        city: data1.name,
+        description: data1.weather[0].description,
+        img: mapToImage(data1.weather[0].main),
+        date: dateStr,
+        time: timeStr,
+        sunrise: toTime(data1.sys.sunrise, timezoneOffset),
+        sunset: toTime(data1.sys.sunset, timezoneOffset),
+        wind: {
+          speed: `${data1.wind.speed} km/h`,
+          direction: getWindDirection(data1.wind.deg),
+        },
+        uvi: 11, // mock value
+      };
+
+      setWeatherData(weather);
+
+      // Hourly forecast
+      const hourlyData = data2.list.slice(0, 8).map((item) => ({
+        time: toTime(item.dt, data2.city.timezone),
         temp: Math.round(item.main.temp),
         img: mapToImage(item.weather[0].main),
-      });
+      }));
+      setHourly(hourlyData);
+
+      // Weekly forecast
+      const dailyData = [];
+      for (let i = 0; i < 40; i += 8) {
+        const item = data2.list[i];
+        const date = new Date((item.dt + data2.city.timezone) * 1000);
+        dailyData.push({
+          date: `${date.getUTCDate()}, ${date.toLocaleString("default", {
+            month: "short",
+          })} ${date.toLocaleString("default", { weekday: "short" })}`,
+          temp: Math.round(item.main.temp),
+          img: mapToImage(item.weather[0].main),
+        });
+      }
+      setWeekly(dailyData);
+    } catch (error) {
+      alert("Error: " + error.message);
+      console.error("Weather fetch failed:", error);
     }
-    setWeekly(dailyData);
   };
 
   useEffect(() => {
@@ -86,6 +108,7 @@ function App() {
           <SunInfo
             sunrise={weatherData?.sunrise}
             sunset={weatherData?.sunset}
+            currentTime={weatherData?.time}
           />
         </div>
         <div className="right-section">
