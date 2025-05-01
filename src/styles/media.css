@@ -1,0 +1,54 @@
+@media screen and (max-width: 767px) {
+  * {
+    overflow: visible;
+  }
+  body {
+    background: linear-gradient(rgb(65, 125, 184), rgb(90, 90, 132));
+    padding: 0;
+  }
+  section {
+    flex-direction: column;
+  }
+  .wind-humidity {
+    flex-direction: column;
+    width: 25rem;
+  }
+  .humidity-container {
+    border-right: 0px;
+  }
+  .wind-img-info-container {
+    width: 100%;
+  }
+  .path-svg {
+    height: 104px;
+    width: 368px;
+    overflow-y: hidden;
+  }
+  .right-section {
+    width: 25rem;
+    height: auto;
+  }
+  .all-week-container {
+    width: 25rem;
+    overflow-x: auto;
+  }
+  header h1 {
+    font-size: 28px;
+  }
+  header {
+    padding-top: 0.5rem;
+    padding-left: 1.5rem;
+    gap: 1rem;
+    justify-content: center;
+    width: 100vw;
+  }
+  .input-box {
+    width: 10rem;
+  }
+  .search-div {
+    width: 15rem;
+  }
+  .search-button {
+    width: 3rem;
+  }
+}
