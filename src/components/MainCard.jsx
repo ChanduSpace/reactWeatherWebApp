@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function MainCard({ data }) {
+  const [flip, setFlip] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      setFlip(false);
+      setTimeout(() => setFlip(true), 100);
+    }
+  }, [data]);
+
   if (!data) return null;
   return (
-    <div className="main-container">
+    <div className={`main-container ${flip ? "ani-flip" : ""}`}>
       <div className="main-wrapper">
         <div className="temp-and-img">
           <div className="temp">

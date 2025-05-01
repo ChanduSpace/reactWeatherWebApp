@@ -5,8 +5,8 @@ export default function ComfortInfo({ humidity, feelsLike, uvi }) {
 
   useEffect(() => {
     if (humidity !== undefined) {
-      setAnimate(false); // reset first
-      setTimeout(() => setAnimate(true), 100); // trigger animation
+      setAnimate(false);
+      setTimeout(() => setAnimate(true), 100);
     }
   }, [humidity]);
 

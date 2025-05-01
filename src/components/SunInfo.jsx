@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function SunInfo({ sunrise, sunset }) {
+  const [animate, setAnimate] = useState(false);
+
+  useEffect(() => {
+    if (sunrise && sunset) {
+      setAnimate(false);
+      setTimeout(() => setAnimate(true), 100);
+    }
+  }, [sunrise, sunset]);
+
   return (
     <div className="sun-container">
       <p className="rise-time">
@@ -16,7 +25,9 @@ export default function SunInfo({ sunrise, sunset }) {
       <div className="sun-base">
         <svg className="path-svg">
           <ellipse className="path-ellipse" />
-          <ellipse className="sun-ellipse"></ellipse>
+          <ellipse
+            className={`sun-ellipse ${animate ? "ani-progress" : ""}`}
+          ></ellipse>
         </svg>
       </div>
     </div>
