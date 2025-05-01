@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function ComfortInfo({ humidity, feelsLike, uvi }) {
+  const [animate, setAnimate] = useState(false);
+
+  useEffect(() => {
+    if (humidity !== undefined) {
+      setAnimate(false); // reset first
+      setTimeout(() => setAnimate(true), 100); // trigger animation
+    }
+  }, [humidity]);
+
   return (
     <div className="humidity-container">
       <p>Comfort level</p>
@@ -11,7 +20,13 @@ export default function ComfortInfo({ humidity, feelsLike, uvi }) {
             <svg className="outer-svg" viewBox="0 0 144 144">
               <circle className="outer-circle" cx="72" cy="72" r="58" />
               <svg className="inner-svg" viewBox="0 0 144 144">
-                <circle className="inner-circle" cx="72" cy="72" r="58" />
+                <circle
+                  className={`inner-circle ${animate ? "ani" : ""}`}
+                  cx="72"
+                  cy="72"
+                  r="58"
+                  style={{ "--humidity": humidity }}
+                />
               </svg>
             </svg>
           </div>
