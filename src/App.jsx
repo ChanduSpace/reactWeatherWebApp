@@ -11,7 +11,7 @@ import "./styles/rightsection.css";
 import "./styles/rightbottom.css";
 import "./styles/media.css";
 
-const API_KEY = "YOUR_API_KEY_HERE";
+const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
 function App() {
   const [weatherData, setWeatherData] = useState(null);
