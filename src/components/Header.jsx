@@ -16,6 +16,7 @@ export default function Header({ onSearch }) {
           className="input-box"
           value={city}
           onChange={(e) => setCity(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleClick()}
         />
         <button className="search-button" onClick={handleClick}>
           <img className="search-png" src="/pics/search.svg" alt="Search" />
