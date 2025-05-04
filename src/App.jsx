@@ -33,9 +33,8 @@ function App() {
       const data2 = await res2.json();
       if (data2.cod !== "200") throw new Error(data2.message);
 
-      const timezoneOffset = data1.timezone; // seconds
+      const timezoneOffset = data1.timezone;
 
-      // Correct local time
       const localTime = new Date((data1.dt + timezoneOffset) * 1000);
       const hours = localTime.getUTCHours();
       const minutes = localTime.getUTCMinutes();
@@ -62,7 +61,7 @@ function App() {
           speed: `${data1.wind.speed} km/h`,
           direction: getWindDirection(data1.wind.deg),
         },
-        uvi: 11, // mock value
+        uvi: 11,
       };
 
       setWeatherData(weather);
@@ -75,7 +74,6 @@ function App() {
       }));
       setHourly(hourlyData);
 
-      // Weekly forecast
       const dailyData = [];
       for (let i = 0; i < 40; i += 8) {
         const item = data2.list[i];
@@ -112,10 +110,6 @@ function App() {
           />
         </div>
         <div className="right-section">
-          <p>Next 24 Hours</p>
-          <HourlyForecast forecast={hourly} />
-          <p>This Week</p>
-          <WeeklyForecast forecast={weekly} />
           <div className="wind-humidity">
             <ComfortInfo
               humidity={weatherData?.humidity}
@@ -127,6 +121,10 @@ function App() {
               speed={weatherData?.wind.speed}
             />
           </div>
+          <p>Next 24 Hours</p>
+          <HourlyForecast forecast={hourly} />
+          <p>This Week</p>
+          <WeeklyForecast forecast={weekly} />
         </div>
       </section>
     </>
